@@ -29,7 +29,7 @@ FeaturePlot(cd8, 'ETV7',reduction = 'harmony.umap',
   scale_colour_gradientn(colours = rev(brewer.pal(n = 5, name = "RdBu")))
 
 ############## 
-#correlation ETV7 memory exhaustion
+#correlation ETV7 and memory/exhaustion markers
 # add group
 clu.p1 = c("CD8.c02.Tm.IL7R",
            "CD8.c05.Tem.CXCR5","CD8.c06.Tem.GZMK","CD8.c11.Tex.PDCD1","CD8.c12.Tex.CXCL13")
@@ -112,8 +112,7 @@ library(patchwork)
 p<-wrap_plots(p_list, ncol = 4);p
 p<-wrap_plots(p1_list, ncol = 4);p
 
-
-#correlation ETV7 memory exhaustion score
+#correlation ETV7 and memory/exhaustion score
 sig_cor = data.frame(cancer = unique(meta$cancerType),estimate = 0,
                      pvalue = 0,estimate_1 = 0,
                      pvalue_1 = 0,estimate_2 = 0,
@@ -168,7 +167,8 @@ ggplot(na.omit(sig_cor),
         legend.position = 'none')+ggtitle('')+
   xlab("")+scale_y_continuous(expand = c(0,0))+
   ylab("Pearson correlation coefficient of\nETV7 and Memory score")
-
+# plot correlation result by cancer types
+# UCEC
 dat = meta[meta$group=='P1'&meta$cancerType=='UCEC',]
 df = data.frame(ETV7 = dat$ETV7,Exhaust.Score = dat$Exhaustion.Score1)
 cor.test(df$ETV7,df$Exhaust.Score)$estimate
@@ -179,7 +179,6 @@ plot(df$ETV7,df$Exhaust.Score ,las = 1,xlab = 'Expression levle of ETV7',
      pch = 8)
 abline(lm(df$Exhaust.Score~df$ETV7), col = "#C49FC4", lwd = 2)
 text(0.2,1.4,'R = 0.49, p-value = 3.76e-20')
-
 
 dat = meta[meta$group=='P1'&meta$cancerType=='UCEC',]
 df = data.frame(ETV7 = dat$ETV7,Memory.Score = dat$Memory.Score1)
@@ -193,7 +192,7 @@ plot(df$ETV7,df$Memory.Score ,las = 1,xlab = 'Expression levle of ETV7',
 abline(lm(df$Memory.Score~df$ETV7), col = "#C49FC4", lwd = 2)
 text(0.3,0.7,'R = -0.43, p-value = 6.59e-15')
 
-
+# ESCA
 dat = meta[meta$group=='P1'&meta$cancerType=='ESCA',]
 df = data.frame(ETV7 = dat$ETV7,Exhaust.Score = dat$Exhaustion.Score1)
 cor.test(df$ETV7,df$Exhaust.Score)$estimate
@@ -206,8 +205,6 @@ plot(df$ETV7,df$Exhaust.Score ,las = 1,xlab = 'Expression levle of ETV7',
 abline(lm(df$Exhaust.Score~df$ETV7), col = "#C49FC4", lwd = 2)
 text(0.2,1.2,'R = 0.71, p-value = 2.4e-55')
 
-
-
 dat = meta[meta$group=='P1'&meta$cancerType=='ESCA',]
 df = data.frame(ETV7 = dat$ETV7,Memory.Score = dat$Memory.Score1)
 cor.test(df$ETV7,df$Memory.Score)$estimate
@@ -218,7 +215,7 @@ plot(df$ETV7,df$Memory.Score ,las = 1,xlab = 'Expression levle of ETV7',
      pch = 8)
 abline(lm(df$Memory.Score~df$ETV7), col = "#C49FC4", lwd = 2)
 text(0.3,1.2,'R = -0.48, p-value = 2.73e-16')
-###### all_cancertype
+###### plot correlation results of all_cancertype
 dat = readRDS('datascore_meta.rds')
 df = data.frame(ETV7 = dat$ETV7,Exhaust.Score = dat$Exhaust.Score)
 cor.test(df$ETV7,df$Exhaust.Score)$p.value

@@ -216,7 +216,31 @@ plot(df$ETV7,df$Memory.Score ,las = 1,xlab = 'Expression levle of ETV7',
 abline(lm(df$Memory.Score~df$ETV7), col = "#C49FC4", lwd = 2)
 text(0.3,1.2,'R = -0.48, p-value = 2.73e-16')
 ###### plot correlation results of all_cancertype
-dat = readRDS('datascore_meta.rds')
+stype = "CD8"
+oDir = normalizePath("./source_data", mustWork=F)
+dir.create(sprintf("%s", oDir), F, T)
+meta = readRDS(sprintf("%s/../data/metaInfo/int.CD8.S35.meta.tb.rds", oDir))
+meta = meta[dataset.tech=="zhangLab5P",]
+setkey(meta, "cellID")
+# cluster name
+nam.conv = fread(sprintf("%s/../data/metaInfo/name.conversion.txt",oDir),sep="\t",stringsAsFactors=F,header=T)
+nam.conv = as.data.frame(nam.conv)
+rownames(nam.conv) = nam.conv$meta.cluster
+meta$cluster.name = nam.conv[as.character(meta$meta.cluster),"cluster.name"]
+# seu and calculate
+seu = readRDS(sprintf("%s/../data/expression/%s/integration/%s.thisStudy_10X.seu.rds", oDir, stype, stype))
+seu = seu[,meta$cellID]
+seu = AddModuleScore(seu, features=list(c('PDCD1','HAVCR2','LAG3','TOX',
+                                          'CXCL13','TIGIT','CTLA4','TNFRSF9')), name="Exhaust.Score")
+seu = AddModuleScore(seu, features=list(c('CXCR4','EOMES','CCR4','TCF7','CCR7','CXCR3','CXCR5')), name="Memory.Score")
+meta <- seu@meta.data
+meta$Exhaust.Score = seu$Exhaust.Score1
+meta$Memory.Score = seu$Memory.Score1
+meta$ETV7 = seu@assays$RNA@data['ETV7',]
+clu.p1 = c("CD8.c01.Tn.MAL","CD8.c02.Tm.IL7R","CD8.c05.Tem.CXCR5","CD8.c06.Tem.GZMK","CD8.c11.Tex.PDCD1","CD8.c12.Tex.CXCL13")
+meta <- meta[meta$meta.cluster%in%clu.p1,]
+dat <- aggregate(cbind(Exhaust.Score, Memory.Score, ETV7) ~ miniCluster, data = meta, FUN = mean)
+
 df = data.frame(ETV7 = dat$ETV7,Exhaust.Score = dat$Exhaust.Score)
 cor.test(df$ETV7,df$Exhaust.Score)$p.value
 df = df[df$ETV7>0,]

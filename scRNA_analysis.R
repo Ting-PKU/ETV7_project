@@ -237,7 +237,7 @@ meta = seu@meta.data
 meta$Exhaust.Score = seu$Exhaust.Score1
 meta$Memory.Score = seu$Memory.Score1
 meta$ETV7 = seu@assays$RNA@data['ETV7',]
-clu.p1 = c("CD8.c01.Tn.MAL","CD8.c02.Tm.IL7R","CD8.c05.Tem.CXCR5","CD8.c06.Tem.GZMK","CD8.c11.Tex.PDCD1","CD8.c12.Tex.CXCL13")
+clu.p1 = c("CD8.c02.Tm.IL7R","CD8.c05.Tem.CXCR5","CD8.c06.Tem.GZMK","CD8.c11.Tex.PDCD1","CD8.c12.Tex.CXCL13")
 meta = meta[meta$meta.cluster%in%clu.p1,]
 dat = aggregate(cbind(Exhaust.Score, Memory.Score, ETV7) ~ miniCluster, data = meta, FUN = mean)
 

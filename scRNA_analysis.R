@@ -6,8 +6,8 @@ library(RColorBrewer)
 setwd("~/projects/singlecell/Tcell/proj2/")
 cd8 = readRDS('~/projects/singlecell/Tcell/data/cd8.rds')
 Idents(cd8) = 'meta.cluster'
-colSet.CD8 <- readRDS("~/projects/singlecell/Tcell/data/metaInfo/panC.colSet.list.rds")
-colSet.CD8 <- colSet.CD8$meta.cluster[grep('CD8', names(colSet.CD8$meta.cluster))]
+colSet.CD8 = readRDS("~/projects/singlecell/Tcell/data/metaInfo/panC.colSet.list.rds")
+colSet.CD8 = colSet.CD8$meta.cluster[grep('CD8', names(colSet.CD8$meta.cluster))]
 DimPlot(cd8,reduction = 'harmony.umap',cols = colSet.CD8)
 
 #Memory and exhaustion score
@@ -40,7 +40,7 @@ meta$group = "Others"
 meta[meta$meta.cluster %in% clu.p1 , "group"] = "P1"
 meta$group2 = "Others"
 meta[meta$meta.cluster %in% clu.p2 , "group2"] = "P2"
-p_list <- list()
+p_list = list()
 for(gene in c('TCF7', 'CXCR4','CXCR5', 'CCR7', 'EOMES')){
   meta$TOX = cd8@assays$RNA@data[gene,]
   sig_cor = data.frame(cancer = unique(meta$cancerType),estimate = 0,
@@ -61,7 +61,7 @@ for(gene in c('TCF7', 'CXCR4','CXCR5', 'CCR7', 'EOMES')){
     sig_cor[i,7] = cor.test(tmp$ETV7,tmp$TOX)$p.value
     
   }
-  p_list[[gene]] <- ggplot(na.omit(sig_cor),
+  p_list[[gene]] = ggplot(na.omit(sig_cor),
                            aes(x=reorder(cancer,-estimate_1,mean),estimate_1))+
     geom_bar(stat = 'identity',aes(fill = cancer),
              alpha=0.8) +
@@ -73,8 +73,8 @@ for(gene in c('TCF7', 'CXCR4','CXCR5', 'CCR7', 'EOMES')){
     xlab("")+scale_y_continuous(expand = c(0,0))+
     ylab(paste0("Pearson correlation coefficient of\nETV7 and ",gene))
 }
-p1_list <- p_list
-p_list <- list()
+p1_list = p_list
+p_list = list()
 for(gene in c('PDCD1','HAVCR2','LAG3','TOX',
               'CXCL13','CTLA4','TNFRSF9')){
   meta$TOX = cd8@assays$RNA@data[gene,]
@@ -96,7 +96,7 @@ for(gene in c('PDCD1','HAVCR2','LAG3','TOX',
     sig_cor[i,7] = cor.test(tmp$ETV7,tmp$TOX)$p.value
     
   }
-  p_list[[gene]] <- ggplot(na.omit(sig_cor),
+  p_list[[gene]] = ggplot(na.omit(sig_cor),
                            aes(x=reorder(cancer,estimate_1,mean),estimate_1))+
     geom_bar(stat = 'identity',aes(fill = cancer),
              alpha=0.8) +
@@ -109,8 +109,8 @@ for(gene in c('PDCD1','HAVCR2','LAG3','TOX',
     ylab(paste0("Pearson correlation coefficient of\nETV7 and ",gene))
 }
 library(patchwork)
-p<-wrap_plots(p_list, ncol = 4);p
-p<-wrap_plots(p1_list, ncol = 4);p
+p = wrap_plots(p_list, ncol = 4);p
+p = wrap_plots(p1_list, ncol = 4);p
 
 #correlation ETV7 and memory/exhaustion score
 sig_cor = data.frame(cancer = unique(meta$cancerType),estimate = 0,
@@ -233,13 +233,13 @@ seu = seu[,meta$cellID]
 seu = AddModuleScore(seu, features=list(c('PDCD1','HAVCR2','LAG3','TOX',
                                           'CXCL13','TIGIT','CTLA4','TNFRSF9')), name="Exhaust.Score")
 seu = AddModuleScore(seu, features=list(c('CXCR4','EOMES','CCR4','TCF7','CCR7','CXCR3','CXCR5')), name="Memory.Score")
-meta <- seu@meta.data
+meta = seu@meta.data
 meta$Exhaust.Score = seu$Exhaust.Score1
 meta$Memory.Score = seu$Memory.Score1
 meta$ETV7 = seu@assays$RNA@data['ETV7',]
 clu.p1 = c("CD8.c01.Tn.MAL","CD8.c02.Tm.IL7R","CD8.c05.Tem.CXCR5","CD8.c06.Tem.GZMK","CD8.c11.Tex.PDCD1","CD8.c12.Tex.CXCL13")
-meta <- meta[meta$meta.cluster%in%clu.p1,]
-dat <- aggregate(cbind(Exhaust.Score, Memory.Score, ETV7) ~ miniCluster, data = meta, FUN = mean)
+meta = meta[meta$meta.cluster%in%clu.p1,]
+dat = aggregate(cbind(Exhaust.Score, Memory.Score, ETV7) ~ miniCluster, data = meta, FUN = mean)
 
 df = data.frame(ETV7 = dat$ETV7,Exhaust.Score = dat$Exhaust.Score)
 cor.test(df$ETV7,df$Exhaust.Score)$p.value
